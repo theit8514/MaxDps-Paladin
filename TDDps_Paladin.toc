@@ -1,8 +1,11 @@
 ## Title: TDDps_Paladin
-## Version: 1.1
+## Version: 1.2
 ## Author: Kaminari
 ## Interface: 60000
 ## Dependencies: TDDps
 ## LoadOnDemand: 1
+## X-Curse-Project-Name: TDDps_Paladin
+## X-Curse-Project-ID: tddps-paladin
+## X-Curse-Repository-ID: wow/tddps-paladin/mainline
 
 main.lua
