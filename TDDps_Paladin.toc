@@ -1,6 +1,6 @@
 ## Title: TDDps_Paladin
-## Version: 1.2.1
-## Author: Kaminari
+## Version: 1.3
+## Author: Kaminaris
 ## Interface: 60200
 ## Dependencies: TDDps
 ## LoadOnDemand: 1
