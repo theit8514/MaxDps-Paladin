@@ -187,8 +187,10 @@ TDDps_Paladin_Retribution = function()
 	if holyPower >= 5 then
 		if _isSeraphim then
 			if seraCd > 4 * gcd then
-			return _TemplarVerdict;
+				return _TemplarVerdict;
 			end
+		elseif _isFinalVerdict then
+			return _FinalVerdict;
 		else
 			return _TemplarVerdict;
 		end
@@ -219,6 +221,8 @@ TDDps_Paladin_Retribution = function()
 			if seraCd > 8 * gcd then
 				return _TemplarVerdict;
 			end
+		elseif _isFinalVerdict then
+			return _FinalVerdict;
 		else
 			return _TemplarVerdict;
 		end
