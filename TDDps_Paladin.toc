@@ -1,8 +1,0 @@
-## Title: TDDps_Paladin
-## Version: 1.4
-## Author: Kaminaris
-## Interface: 60200
-## Dependencies: TDDps
-## LoadOnDemand: 1
-
-main.lua
