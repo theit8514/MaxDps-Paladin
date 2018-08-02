@@ -1,135 +1,118 @@
-﻿-- Spells
+﻿if not MaxDps then
+	return;
+end
+
+local Paladin = MaxDps:NewModule('Paladin');
+
+-- Spells
 local _TemplarsVerdict = 85256;
 local _Judgment = 20271;
 local _CrusaderStrike = 35395;
 local _BladeofJustice = 184575;
-local _AshestoAshes = 179546;
-local _WakeofAshes = 205273;
-local _Crusade = 224668;
-local _AvengingWrath = 31884;
-local _DivineStorm = 53385;
-local _Heroism = 32182;
-local _Bloodlust = 2825;
-local _TimeWarp = 80353;
+local _Crusade = 231895;
 local _ShieldofVengeance = 184662;
-local _MasteryDivineJudgment = 76672;
-local _JusticarsVengeance = 215661;
-local _DivinePurpose = 223817;
-local _GreaterBlessingofMight = 203528;
-local _HolyWrath = 210220;
 local _Zeal = 217020;
-local _BlindingLight = 115750;
-local _FinalVerdict = 198038;
-local _ExecutionSentence = 213757;
-local _EyeforanEye = 205191;
-local _Consecration = 26573;
-local _DivineHammer = 198034;
+local _Consecration = 205228;
+local _HammerofWrath = 24275;
+local _Inquisition = 84963;
+local _ExecutionSentence = 267798;
+local _WakeofAshes = 255937;
+local _JudgementHoly = 275773;
+local _HolyShock = 20473;
+local _HolyConsecration = 26573;
+local _HolyConsecrationAura = 204242;
+local _AvengingWrath = 31884;
 
-MaxDps.Paladin = {};
+-- General
 
-function MaxDps.Paladin.CheckTalents()
-end
+function Paladin:Enable()
+	MaxDps:Print(MaxDps.Colors.Info .. 'Paladin [Holy, Protection, Retribution]');
 
-function MaxDps:EnableRotationModule(mode)
-	mode = mode or 1;
-	MaxDps.Description = 'Paladin Module [Retribution]';
-	MaxDps.ModuleOnEnable = MaxDps.Paladin.CheckTalents;
-	if mode == 1 then
-		MaxDps.NextSpell = MaxDps.Paladin.Holy;
-	end;
-	if mode == 2 then
-		MaxDps.NextSpell = MaxDps.Paladin.Protection;
-	end;
-	if mode == 3 then
-		MaxDps.NextSpell = MaxDps.Paladin.Retribution;
+	if MaxDps.Spec == 1 then
+		MaxDps.NextSpell = Paladin.Holy;
+	elseif MaxDps.Spec == 2 then
+		MaxDps.NextSpell = Paladin.Protection;
+	elseif MaxDps.Spec == 3 then
+		MaxDps.NextSpell = Paladin.Retribution;
 	end;
 end
 
-function MaxDps.Paladin.Holy(_, timeShift, currentSpell, gcd, talents)
-	return nil;
-end
+function Paladin:Holy(timeShift, currentSpell, gcd, talents)
 
-function MaxDps.Paladin.Protection(_, timeShift, currentSpell, gcd, talents)
-	return nil;
-end
-
-function MaxDps.Paladin.Retribution(_, timeShift, currentSpell, gcd, talents)
-	local crusStrike = _CrusaderStrike;
-	if talents[_Zeal] then
-		crusStrike = _Zeal;
+	if MaxDps:SpellAvailable(_JudgementHoly, timeShift) then
+		return _JudgementHoly;
 	end
 
-	local bladeOfJustice = _BladeofJustice;
-	if talents[_DivineHammer] then
-		bladeOfJustice = _DivineHammer;
+	if MaxDps:SpellAvailable(_CrusaderStrike, timeShift) then
+		return _CrusaderStrike;
 	end
 
-	local holyPower = UnitPower('player', SPELL_POWER_HOLY_POWER);
-	local jAura, jAuraCD = MaxDps:TargetAura(_Judgment, timeShift + 0.5);
-	local dp = MaxDps:Aura(_DivinePurpose, timeShift);
-	local j, jCD = MaxDps:SpellAvailable(_Judgment, timeShift);
-	local _, crusadeCD = MaxDps:SpellAvailable(_Crusade, timeShift);
-	local crus, crusCD = MaxDps:SpellAvailable(crusStrike, timeShift);
-	local boj, bojCD = MaxDps:SpellAvailable(bladeOfJustice, timeShift);
+	if MaxDps:SpellAvailable(_HolyShock, timeShift) then
+		return _HolyShock;
+	end
 
-	MaxDps:GlowCooldown(_AvengingWrath, MaxDps:SpellAvailable(_AvengingWrath, timeShift));
+	if MaxDps:SpellAvailable(_HolyConsecration, timeShift) and
+		not MaxDps:TargetAura(_HolyConsecrationAura, timeShift + 3) then
+		return _HolyConsecration;
+	end
+end
+
+function Paladin:Protection(timeShift, currentSpell, gcd, talents)
+
+end
+
+function Paladin:Retribution(timeShift, currentSpell, gcd, talents)
+
+	local tgtPctHp = MaxDps:TargetPercentHealth();
+	local execPct = 0.2;
+	local holyPower = UnitPower('player', Enum.PowerType.HolyPower);
+
+	-- Cooldowns
+
 	MaxDps:GlowCooldown(_ShieldofVengeance, MaxDps:SpellAvailable(_ShieldofVengeance, timeShift));
-
-	if talents[_BlindingLight] then
-		MaxDps:GlowCooldown(_BlindingLight, MaxDps:SpellAvailable(_BlindingLight, timeShift));
-	end
-
-	if talents[_EyeforanEye] then
-		MaxDps:GlowCooldown(_EyeforanEye, MaxDps:SpellAvailable(_EyeforanEye, timeShift));
-	end
 
 	if talents[_Crusade] then
 		MaxDps:GlowCooldown(_Crusade, MaxDps:SpellAvailable(_Crusade, timeShift));
+	else
+		MaxDps:GlowCooldown(_AvengingWrath, MaxDps:SpellAvailable(_AvengingWrath, timeShift));
+	end
+	-- Rotation
+
+	-- Spenders
+	if talents[_Inquisition] and holyPower >= 2 and not MaxDps:Aura(_Inquisition, timeShift + 7) then
+		return _Inquisition;
 	end
 
-	if talents[_ExecutionSentence]
-		and MaxDps:SpellAvailable(_ExecutionSentence, timeShift)
-		and holyPower >= 3
-		and (
-			(jCD < gcd * 4.5) or (jAuraCD > gcd * 4.67)
-		) and (
-			not talents[_Crusade] or (crusadeCD > gcd * 2)
-		)
-	then
+	if talents[_ExecutionSentence] and MaxDps:SpellAvailable(_ExecutionSentence, timeShift) and holyPower >= 3 then
 		return _ExecutionSentence;
 	end
 
-	if jAura and (holyPower > 2 or dp) then
+	if holyPower >= 5 then
 		return _TemplarsVerdict;
 	end
 
-	if MaxDps:SpellAvailable(_WakeofAshes, timeShift) and holyPower <= 1 then
+	-- Generators
+	if talents[_WakeofAshes] and holyPower<=1 and MaxDps:SpellAvailable(_WakeofAshes, timeShift) then
 		return _WakeofAshes;
 	end
 
-	if crus and holyPower < 5 then
-		return crusStrike;
+	if MaxDps:SpellAvailable(_BladeofJustice, timeShift) and holyPower <= 3 then
+		return _BladeofJustice;
 	end
 
-	if boj and holyPower <= 3 then
-		return bladeOfJustice;
-	end
-
-	if j and holyPower >= 3 then
+	if MaxDps:SpellAvailable(_Judgment, timeShift) and holyPower <= 4 then
 		return _Judgment;
 	end
 
-	if talents[_Consecration] and MaxDps:SpellAvailable(_Consecration, timeShift) then
+	if MaxDps:SpellAvailable(_HammerofWrath, timeShift) and holyPower <=4 and tgtPctHp < execPct then
+		return _HammerofWrath;
+	end
+
+	if talents[_Consecration] and MaxDps:SpellAvailable(_Consecration, timeShift) and holyPower <=4 then
 		return _Consecration;
 	end
 
-	if holyPower >= 3 and jCD < bojCD and jCD < crusCD then
-		return _Judgment;
-	end
-
-	if bojCD < crusCD then
-		return bladeOfJustice;
-	else
-		return crusStrike;
+	if MaxDps:SpellAvailable(_CrusaderStrike, timeShift) and holyPower <= 4 then
+		return _CrusaderStrike;
 	end
 end
