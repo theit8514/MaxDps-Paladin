@@ -104,7 +104,7 @@ function Paladin:Retribution(timeShift, currentSpell, gcd, talents)
 		return _Judgment;
 	end
 
-	if MaxDps:SpellAvailable(_HammerofWrath, timeShift) and holyPower <=4 and tgtPctHp < execPct then
+	if talents[_HammerofWrath] and MaxDps:SpellAvailable(_HammerofWrath, timeShift) and holyPower <=4 and tgtPctHp < execPct then
 		return _HammerofWrath;
 	end
 
