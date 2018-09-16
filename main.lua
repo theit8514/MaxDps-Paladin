@@ -35,6 +35,8 @@ function Paladin:Enable()
 	elseif MaxDps.Spec == 3 then
 		MaxDps.NextSpell = Paladin.Retribution;
 	end;
+
+	return true;
 end
 
 function Paladin:Holy(timeShift, currentSpell, gcd, talents)
