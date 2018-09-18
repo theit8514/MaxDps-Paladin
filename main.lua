@@ -21,6 +21,8 @@ local _JudgementHoly = 275773;
 local _HolyShock = 20473;
 local _HolyConsecration = 26573;
 local _HolyConsecrationAura = 204242;
+local _DivinePurpose = 223817;
+local _DivinePurposeAura = 223819;
 local _AvengingWrath = 31884;
 
 -- General
@@ -81,6 +83,10 @@ function Paladin:Retribution(timeShift, currentSpell, gcd, talents)
 	-- Rotation
 
 	-- Spenders
+	if talents[_DivinePurpose] and MaxDps:Aura(_DivinePurposeAura, timeShift) then
+		return _TemplarsVerdict;
+	end
+
 	if talents[_Inquisition] and holyPower >= 2 and not MaxDps:Aura(_Inquisition, timeShift + 7) then
 		return _Inquisition;
 	end
